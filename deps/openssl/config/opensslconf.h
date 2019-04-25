@@ -3,6 +3,10 @@
 # define OPENSSL_LINUX 1
 #endif
 
+#if defined(__Fuchsia__)
+# define OPENSSL_FUCHSIA 1
+#endif
+
 #if defined(OPENSSL_NO_ASM)
 # include "./opensslconf_no-asm.h"
 #else

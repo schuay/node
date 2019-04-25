@@ -14,11 +14,14 @@
 #include <stdio.h>
 #include "internal/cryptlib.h"
 #include <openssl/rand.h>
+#include <openssl/opensslconf.h>
 #include "rand_lcl.h"
 #include "internal/rand_int.h"
 #include <stdio.h>
 #include "internal/dso.h"
-#if defined(__linux)
+#if defined(OPENSSL_FUCHSIA)
+# include <zircon/syscalls.h>
+#elif defined(__linux)
 # include <sys/syscall.h>
 #endif
 #if defined(__FreeBSD__)
@@ -292,7 +295,10 @@ static ssize_t syscall_random(void *buf, size_t buflen)
      */
 
     /* Linux supports this since version 3.17 */
-#  if defined(__linux) && defined(SYS_getrandom)
+#  if defined(OPENSSL_FUCHSIA)
+    zx_cprng_draw(buf, buflen);
+    return buflen;
+#  elif defined(__linux) && defined(SYS_getrandom)
     return syscall(SYS_getrandom, buf, buflen, 0);
 #  elif (defined(__FreeBSD__) || defined(__NetBSD__)) && defined(KERN_ARND)
     return sysctl_random(buf, buflen);
