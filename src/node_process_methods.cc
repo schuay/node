@@ -24,7 +24,6 @@
 typedef int mode_t;
 #else
 #include <pthread.h>
-#include <sys/resource.h>  // getrlimit, setrlimit
 #include <termios.h>  // tcgetattr, tcsetattr
 #endif
 

@@ -7,7 +7,6 @@
 #ifdef _WIN32
 #include <Windows.h>
 #else  // !_WIN32
-#include <sys/resource.h>
 #include <cxxabi.h>
 #include <dlfcn.h>
 #endif
@@ -464,7 +463,7 @@ static void PrintResourceUsage(JSONWriter* writer) {
 
 // Report operating system information.
 static void PrintSystemInformation(JSONWriter* writer) {
-#ifndef _WIN32
+#if !defined(__Fuchsia__) && !defined(_WIN32)
   static struct {
     const char* description;
     int id;
@@ -486,7 +485,7 @@ static void PrintSystemInformation(JSONWriter* writer) {
 #endif
     {"virtual_memory_kbytes", RLIMIT_AS}
   };
-#endif  // _WIN32
+#endif  // !defined(__Fuchsia__) && !defined(_WIN32)
   writer->json_objectstart("environmentVariables");
   Mutex::ScopedLock lock(node::per_process::env_var_mutex);
 #ifdef _WIN32
@@ -527,6 +526,8 @@ static void PrintSystemInformation(JSONWriter* writer) {
   writer->json_objectend();
 
   writer->json_objectstart("userLimits");
+
+#ifndef __Fuchsia__
   struct rlimit limit;
   std::string soft, hard;
 
@@ -548,6 +549,7 @@ static void PrintSystemInformation(JSONWriter* writer) {
     }
   }
   writer->json_objectend();
+#endif  // __Fuchsia__
 #endif
 
   PrintLoadedLibraries(writer);
