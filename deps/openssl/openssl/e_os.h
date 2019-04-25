@@ -325,7 +325,9 @@ struct servent *getservbyname(const char *name, const char *proto);
 # endif
 
 /* unistd.h defines _POSIX_VERSION */
+// TODO(jgruber): Fuchsia does not implement mlock, needed by secure memory.
 # if !defined(OPENSSL_NO_SECURE_MEMORY) && defined(OPENSSL_SYS_UNIX) \
+     && !defined(OPENSSL_FUCHSIA)                                     \
      && ( (defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L)      \
           || defined(__sun) || defined(__hpux) || defined(__sgi)      \
           || defined(__osf__) )
