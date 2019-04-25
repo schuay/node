@@ -27,7 +27,9 @@
 #include <errno.h>
 
 #include <sys/time.h>
+#ifndef __Fuchsia__
 #include <sys/resource.h>  /* getrlimit() */
+#endif  // __Fuchsia__
 #include <unistd.h>  /* getpagesize() */
 
 #include <limits.h>
@@ -168,6 +170,7 @@ void uv_barrier_destroy(uv_barrier_t* barrier) {
  * On Linux, threads created by musl have a much smaller stack than threads
  * created by glibc (80 vs. 2048 or 4096 kB.)  Follow glibc for consistency.
  */
+#ifndef __Fuchsia__
 static size_t thread_stack_size(void) {
 #if defined(__APPLE__) || defined(__linux__)
   struct rlimit lim;
@@ -191,6 +194,7 @@ static size_t thread_stack_size(void) {
   return 2 << 20;  /* glibc default. */
 #endif
 }
+#endif  // __Fuchsia__
 
 
 int uv_thread_create(uv_thread_t *tid, void (*entry)(void *arg), void *arg) {
