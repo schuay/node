@@ -49,6 +49,8 @@
 # include "uv/linux.h"
 #elif defined (__MVS__)
 # include "uv/os390.h"
+#elif defined(__Fuchsia__)
+# include "uv/posix.h"
 #elif defined(__PASE__)
 # include "uv/posix.h"
 #elif defined(_AIX)
