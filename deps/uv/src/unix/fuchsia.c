@@ -203,7 +203,7 @@ int uv_os_setpriority(uv_pid_t pid, int priority) {
 //
 // --- thread.c ----------------------------------------------------------------
 
-static size_t thread_stack_size(void) {
+size_t thread_stack_size(void) {
   // TODO(jgruber): Implement.
   return 0;
 }
