@@ -503,6 +503,7 @@ inline void PlatformInit() {
   CHECK_EQ(err, 0);
 #endif  // HAVE_INSPECTOR
 
+#ifndef __Fuchsia__
 #ifndef NODE_SHARED_MODE
   // Restore signal dispositions, the parent process may have changed them.
   struct sigaction act;
@@ -521,6 +522,7 @@ inline void PlatformInit() {
 
   RegisterSignalHandler(SIGINT, SignalExit, true);
   RegisterSignalHandler(SIGTERM, SignalExit, true);
+#endif  // __Fuchsia__
 
 #ifndef __Fuchsia__
   // Raise the open file descriptor limit.
