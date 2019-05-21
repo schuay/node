@@ -459,6 +459,13 @@ void LoadEnvironment(Environment* env) {
 
 
 #ifdef __POSIX__
+#ifdef __Fuchsia__
+void RegisterSignalHandler(int signal,
+                           void (*handler)(int signal),
+                           bool reset_handler) {
+  // TODO(jgruber): Fuchsia doesn't support signals.
+}
+#else  // __Fuchsia__
 void RegisterSignalHandler(int signal,
                            void (*handler)(int signal),
                            bool reset_handler) {
@@ -474,7 +481,7 @@ void RegisterSignalHandler(int signal,
   sigfillset(&sa.sa_mask);
   CHECK_EQ(sigaction(signal, &sa, nullptr), 0);
 }
-
+#endif  // __Fuchsia__
 #endif  // __POSIX__
 
 inline void PlatformInit() {

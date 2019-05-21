@@ -44,17 +44,6 @@
 #endif
 
 
-int uv__platform_loop_init(uv_loop_t* loop) {
-  // TODO(jgruber): Implement.
-  // Based on epoll_create1 on linux. The epoll API allows monitoring fd's
-  // for possible IO.
-  return UV__ERR(EINVAL);
-}
-
-void uv__platform_loop_delete(uv_loop_t* loop) {
-  // TODO(jgruber): Implement.
-}
-
 void uv__set_process_title(const char* title) {
   // TODO(jgruber): Implement.
   // Sets the thread / process name. Based on prctl(PR_SET_NAME, ...) on linux.
@@ -130,16 +119,6 @@ void uv_free_interface_addresses(uv_interface_address_t* addresses,
   uv__free(addresses);
 }
 
-void uv__io_poll(uv_loop_t* loop, int timeout) {
-  // TODO(jgruber): Implement.
-  // See also: uv__platform_loop_init.
-}
-
-void uv__platform_invalidate_fd(uv_loop_t* loop, int fd) {
-  // TODO(jgruber): Implement.
-  // See also: uv__platform_loop_init.
-}
-
 int uv_uptime(double* uptime) {
   int r;
   struct timespec sp;
@@ -149,18 +128,6 @@ int uv_uptime(double* uptime) {
 
   *uptime = sp.tv_sec;
   return 0;
-}
-
-int uv__io_fork(uv_loop_t* loop) {
-  // TODO(jgruber): Implement.
-  // See also: uv__platform_loop_init.
-  return UV__ERR(EINVAL);
-}
-
-int uv__io_check_fd(uv_loop_t* loop, int fd) {
-  // TODO(jgruber): Implement.
-  // See also: uv__platform_loop_init.
-  return UV__ERR(EINVAL);
 }
 
 int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count) {

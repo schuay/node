@@ -63,15 +63,17 @@ RB_GENERATE_STATIC(uv__signal_tree_s,
 static void uv__signal_global_reinit(void);
 
 static void uv__signal_global_init(void) {
-  if (uv__signal_lock_pipefd[0] == -1)
-    /* pthread_atfork can register before and after handlers, one
-     * for each child. This only registers one for the child. That
-     * state is both persistent and cumulative, so if we keep doing
-     * it the handler functions will be called multiple times. Thus
-     * we only want to do it once.
-     */
-    if (pthread_atfork(NULL, NULL, &uv__signal_global_reinit))
-      abort();
+  // TODO(jgruber): Fuchsia doesn't support pthread_atfork.
+//  if (uv__signal_lock_pipefd[0] == -1) {
+//    /* pthread_atfork can register before and after handlers, one
+//     * for each child. This only registers one for the child. That
+//     * state is both persistent and cumulative, so if we keep doing
+//     * it the handler functions will be called multiple times. Thus
+//     * we only want to do it once.
+//     */
+//    if (pthread_atfork(NULL, NULL, &uv__signal_global_reinit))
+//      abort();
+//  }
 
   uv__signal_global_reinit();
 }
@@ -390,6 +392,9 @@ static int uv__signal_start(uv_signal_t* handle,
 
   uv__signal_block_and_lock(&saved_sigmask);
 
+#ifdef __Fuchsia__
+  // TODO(jgruber): Signals are unsupported in Fuchsia.
+#else
   /* If at this point there are no active signal watchers for this signum (in
    * any of the loops), it's time to try and register a handler for it here.
    * Also in case there's only one-shot handlers and a regular handler comes in.
@@ -404,6 +409,7 @@ static int uv__signal_start(uv_signal_t* handle,
       return err;
     }
   }
+#endif  // __Fuchsia__
 
   handle->signum = signum;
   if (oneshot)

@@ -122,6 +122,16 @@ int uv_tty_init(uv_loop_t* loop, uv_tty_t* tty, int fd, int unused) {
     return UV__ERR(errno);
   mode = saved_flags & O_ACCMODE;
 
+
+#ifdef __Fuchsia__
+  // TODO(jgruber): F_GETFL is only partially implemented. E.g. for tty fd's,
+  // it just returns 0, and unfortunately '0' implies O_RDONLY. In this case,
+  // act as if the fd is read-write.
+  if (mode == 0) {
+    mode = O_RDWR;
+  }
+#endif  // __Fuchsia__
+
   /* Reopen the file descriptor when it refers to a tty. This lets us put the
    * tty in non-blocking mode without affecting other processes that share it
    * with us.
@@ -226,6 +236,9 @@ int uv_tty_set_mode(uv_tty_t* tty, uv_tty_mode_t mode) {
   if (tty->mode == (int) mode)
     return 0;
 
+#ifdef __Fuchsia__
+  // TODO(jgruber): Unimplemented.
+#else
   fd = uv__stream_fd(tty);
   if (tty->mode == UV_TTY_MODE_NORMAL && mode != UV_TTY_MODE_NORMAL) {
     if (tcgetattr(fd, &tty->orig_termios))
@@ -260,6 +273,7 @@ int uv_tty_set_mode(uv_tty_t* tty, uv_tty_mode_t mode) {
   /* Apply changes after draining */
   if (tcsetattr(fd, TCSADRAIN, &tmp))
     return UV__ERR(errno);
+#endif  // Fuchsia
 
   tty->mode = mode;
   return 0;
